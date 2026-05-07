@@ -39,7 +39,14 @@ ARIS 是一套**可移植的 Skill 协议** —— 几个 Markdown 文件，教�
 
 ## 30 秒上手
 
-**方式一：直接复制（零安装）**
+**方式一：让 Agent 帮你装（最推荐）**
+
+直接向 Claude Code（或其他带命令行权限的 Agent）布置任务：
+> "帮我安装 aris-cli（你可以使用 `cargo install aris-cli` 全局安装，或者以适合当前项目的方式安装），安装完成后运行 `aris install claude-code`。"
+
+然后，你只需要在 Agent 中输入 `/aris` 即可开始。
+
+**方式二：手动复制（零安装）**
 
 ```bash
 # 把 skill 文件复制到你的项目
@@ -50,7 +57,7 @@ cp commands/aris.md 你的项目/.claude/commands/aris.md
 
 然后在 Agent 中输入 `/aris`。完了。
 
-**方式二：用 CLI 自动安装**
+**方式三：手动用 CLI 安装**
 
 ```bash
 cargo install aris-cli

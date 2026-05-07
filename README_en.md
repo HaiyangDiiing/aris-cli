@@ -37,7 +37,14 @@ ARIS is a **portable Skill protocol** — a few Markdown files that teach AI cod
 
 ## 30-Second Start
 
-**Option 1: Just copy (zero install)**
+**Option 1: Let your Agent install it (Recommended)**
+
+Just give your agent (like Claude Code) a task:
+> "Install aris-cli for me (you can use `cargo install aris-cli` globally, or install it locally in a way that fits this project), and then run `aris install claude-code`."
+
+Then, simply type `/aris` in the agent to begin.
+
+**Option 2: Manual copy (zero install)**
 
 ```bash
 # Copy skill files into your project
@@ -48,7 +55,7 @@ cp commands/aris.md your-project/.claude/commands/aris.md
 
 Then type `/aris` in your agent. Done.
 
-**Option 2: Auto-install with CLI**
+**Option 3: Manual CLI install**
 
 ```bash
 cargo install aris-cli
