@@ -262,6 +262,15 @@ aris-cli/
 
 ---
 
+## 反馈与 Bug 提交
+
+如果你在使用过程中遇到任何 Bug、有功能建议，或者你的 Agent 跑出了有趣的“作弊”行为（Reward Hacking），欢迎提交 Issue！
+
+- 🐛 [提交 Bug 或建议 (GitHub Issues)](https://github.com/HaiyangDiiing/aris-cli/issues)
+- 💡 欢迎提交 Pull Request 来完善核心的 Skill 协议或 CLI 工具。
+
+---
+
 ## 许可证
 
 MIT — 见 [LICENSE](LICENSE)。

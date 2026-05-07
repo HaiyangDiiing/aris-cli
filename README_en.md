@@ -261,6 +261,15 @@ aris-cli/
 
 ---
 
+## Feedback & Issues
+
+If you encounter any bugs, have feature requests, or catch your agent doing something hilarious (reward hacking), please open an issue!
+
+- 🐛 [Submit an Issue](https://github.com/HaiyangDiiing/aris-cli/issues)
+- 💡 Pull requests are welcome for both the core skill protocol and the CLI.
+
+---
+
 ## License
 
 MIT — see [LICENSE](LICENSE).
