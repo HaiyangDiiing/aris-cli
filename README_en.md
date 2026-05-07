@@ -21,10 +21,8 @@ Inspired by [Karpathy's autoresearch](https://github.com/karpathy/autoresearch).
 ---
 
 ## What Is This?
-
 ARIS is a **portable Skill protocol** — a few Markdown files that teach AI coding agents to optimize any measurable target through a disciplined process.
 
-**It is not a tool you must install.** It is a protocol the agent reads. Copy the folder, and the agent gains a new capability.
 
 | What you do | What the agent does |
 |-------------|---------------------|
