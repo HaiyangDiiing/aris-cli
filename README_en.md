@@ -4,17 +4,15 @@
 
 # ARIS
 
-**Autonomous Research Iteration System**
-
-*Autonomous experiment loops for AI coding agents*
+**A Skill That Makes AI Coding Agents Iterate Autonomously**
 
 [![License: MIT](https://img.shields.io/badge/License-MIT-green.svg)](LICENSE)
 
-Turn any measurable engineering goal into a guarded loop: your agent edits code, runs verification, records the metric, keeps improvements, and reverts failures.
+Copy the `skills/aris/` folder into your project, type `/aris`, and the agent enters an autonomous experiment loop — editing code, verifying metrics, keeping improvements, reverting failures — no binary installation required.
 
 Inspired by [Karpathy's autoresearch](https://github.com/karpathy/autoresearch).
 
-[Quick Start](#quick-start) · [Why ARIS](#why-aris) · [How It Works](#how-it-works) · [Skill Commands](#skill-commands) · [CLI](#cli)
+[30-Second Start](#30-second-start) · [Natural Language Tasks](#natural-language-tasks) · [Skill Commands](#skill-commands) · [Why ARIS](#why-aris) · [How It Works](#how-it-works) · [CLI (Optional)](#cli-optional)
 
 [中文文档](README.md)
 
@@ -24,82 +22,109 @@ Inspired by [Karpathy's autoresearch](https://github.com/karpathy/autoresearch).
 
 ## What Is This?
 
-ARIS is a **portable skill protocol** plus an optional Rust CLI for AI coding agents. It gives the agent a disciplined way to optimize measurable targets without drifting into vague "try things until it feels better" work.
+ARIS is a **portable Skill protocol** — a few Markdown files that teach AI coding agents to optimize any measurable target through a disciplined process.
 
-Use the skill alone if you want a prompt-level workflow. Add the CLI when you want one-command installation, pre-flight checks, structured experiment logs, best-result lookup, reports, and a live TUI.
+**It is not a tool you must install.** It is a protocol the agent reads. Copy the folder, and the agent gains a new capability.
 
-**Supported agents:** Claude Code, OpenAI Codex, Cursor, Windsurf, OpenCode, Gemini CLI, GitHub Copilot, and universal `.agents/skills/` workflows.
+| What you do | What the agent does |
+|-------------|---------------------|
+| Copy `skills/aris/` into your project | Reads the protocol automatically |
+| Type `/aris` + describe your goal | Enters an 8-phase autonomous loop |
+| Grab coffee ☕ | Edit → Verify → Keep/Revert → Repeat |
+| Review results | Outputs a structured experiment report |
 
-**What it does:**
+**Supported agents:** Claude Code · OpenAI Codex · Cursor · Windsurf · OpenCode · Gemini CLI · GitHub Copilot · Universal `.agents/skills/` workflows
+
+---
+
+## 30-Second Start
+
+**Option 1: Just copy (zero install)**
+
+```bash
+# Copy skill files into your project
+cp -r skills/aris/ your-project/.claude/skills/aris/
+cp -r commands/aris/ your-project/.claude/commands/aris/
+cp commands/aris.md your-project/.claude/commands/aris.md
+```
+
+Then type `/aris` in your agent. Done.
+
+**Option 2: Auto-install with CLI**
+
+```bash
+cargo install aris-cli
+aris install claude-code   # or codex / cursor / windsurf / gemini / copilot / all
+```
+
+The CLI places skill files in the right location and adds `aris doctor` pre-checks, `aris watch` live dashboard, and more. But **the skill itself does not depend on the CLI**.
+
+---
+
+## Natural Language Tasks
+
+No structured fields to memorize. Describe what you want like you'd tell a colleague:
 
 ```
-You: /aris
-     Goal: Increase test coverage to 90%
-     Verify: pytest --cov | grep TOTAL | awk '{print $NF}' | tr -d '%'
-
-Agent: (runs 50+ experiments autonomously)
-       Baseline: 72% → Best: 91% (23 keeps, 27 discards, 0 crashes)
-```
-
-**Describe tasks in natural language — no structured fields required:**
-
-```
-You: /aris
-     I need to test whether my data preprocessing pipeline is fully ok.
-     Validate every output item using vllm. All 133 items passing is our goal.
+/aris
+I need to test whether my data preprocessing pipeline is fully ok.
+Validate every output item using vllm. All 133 items passing is our goal.
 
 Agent: (understands the objective, breaks down verification, iterates)
        Baseline: 98/133 passing → Final: 133/133 passing (12 keeps, 5 discards)
 ```
 
-Describe your goal like you'd tell a colleague. The agent infers the metric, verification method, and completion criteria automatically.
-
-You set the goal. The agent does the work. You review the results.
-
----
-
-## Quick Start
-
-### 1. Install ARIS
-
-```bash
-cargo install aris-cli
-aris install claude-code
 ```
+/aris
+Get this model's inference latency under 50ms. Use wrk for benchmarking.
+Don't break existing unit tests.
 
-Use `aris install codex`, `cursor`, `windsurf`, `opencode`, `gemini`, `copilot`, `agents`, or `all` for other agent targets.
-
-### 2. Configure a measurable goal
-
-```bash
-aris init \
-  --target-file src/api/routes.ts \
-  --eval-command "npm run bench:api | grep p99 | awk '{print $NF}'" \
-  --metric-name p99_latency \
-  --metric-direction lower
-
-aris doctor
+Agent: (infers metric as p99 latency, direction lower, guard as npm test)
+       Baseline: 127ms → Best: 43ms (18 keeps, 12 discards)
 ```
-
-`aris doctor` checks that the project, git state, eval command, and logging setup are ready before the agent starts iterating.
-
-### 3. Start the loop
-
-In your AI coding agent, type:
 
 ```
 /aris
-Goal: Reduce API response time below 100ms
-Scope: src/api/**/*.ts
-Metric: p99 latency (ms)
-Direction: lower
-Verify: npm run bench:api | grep "p99" | awk '{print $NF}'
-Guard: npm test
+My ETL script currently hangs on 17 edge cases. Fix them one by one.
+cargo test all green means done.
+
+Agent: (decomposes into 17 sub-goals, iterates through each)
+       Baseline: 0/17 passing → Final: 17/17 passing (17 keeps, 9 discards)
 ```
 
-That's it. The agent enters an autonomous loop — modifying, verifying, keeping or reverting — until the goal is reached or you interrupt.
+You can also use structured fields for precise control:
 
-Prefer manual installation? Copy `skills/aris/`, `commands/aris/`, and `commands/aris.md` into your agent's skill/command directories. The protocol works without the CLI; the CLI just makes installation, validation, and reporting easier.
+```
+/aris
+Goal: Increase test coverage to 90%
+Scope: src/**/*.ts
+Verify: npx jest --coverage | grep 'All files' | awk '{print $4}'
+Guard: npm test
+Direction: higher
+Iterations: 30
+```
+
+The agent automatically infers the target metric, verification command, scope, and completion criteria from your description. Just talk normally.
+
+---
+
+## Skill Commands
+
+| Command | What the agent does |
+|---------|---------------------|
+| `/aris` | Run the autonomous experiment loop |
+| `/aris:plan` | Interactive wizard: analyze codebase → suggest goals, metrics, verify commands |
+| `/aris:debug` | Autonomous bug-hunting loop (scientific method: hypothesize → test → eliminate) |
+| `/aris:fix` | Iteratively repair errors until zero remain |
+
+### Don't Know What Metric to Use?
+
+```
+/aris:plan
+Goal: Make the API faster
+```
+
+The plan wizard analyzes your codebase, suggests metrics, and dry-runs the verify command before launching. Let the agent figure it out.
 
 ---
 
@@ -114,7 +139,7 @@ AI coding agents are good at making changes. They are less reliable at running l
 | Failed attempts pollute the working tree | Automatic rollback through git |
 | Experiment history disappears from context | Structured logs and commit history |
 | Metrics get gamed after many iterations | Reward-hacking detection flags suspicious jumps |
-| Different agents need different prompts | One portable skill protocol across platforms |
+| Different agents need different prompts | One portable skill across platforms |
 
 ---
 
@@ -156,104 +181,6 @@ Phase 8: Loop          — back to Phase 1
 
 ---
 
-## Skill Commands
-
-| Command | What the agent does |
-|---------|---------------------|
-| `/aris` | Run the autonomous experiment loop |
-| `/aris:plan` | Interactive wizard: Goal → Scope, Metric, Direction, Verify |
-| `/aris:debug` | Autonomous bug-hunting loop (scientific method) |
-| `/aris:fix` | Iteratively repair errors until zero remain |
-
-### Usage Examples
-
-```
-# Unlimited — loop until interrupted or plateau
-/aris
-Goal: Increase test coverage to 90%
-Scope: src/**/*.ts
-Verify: npx jest --coverage | grep 'All files' | awk '{print $4}'
-
-# Bounded — exactly 25 iterations
-/aris
-Goal: Reduce bundle size below 200KB
-Iterations: 25
-
-# With guard (regression prevention)
-/aris
-Goal: Improve API response time
-Verify: node bench.js | tail -1
-Guard: npm test
-Direction: lower
-```
-
-### Natural Language Works Too
-
-No need to memorize structured fields — just describe what you want in plain language:
-
-```
-/aris
-I need to test my data preprocessing pipeline end-to-end. Validate every
-output item using vllm. All 133 items passing is our goal.
-
-/aris
-Get this model's inference latency under 50ms. Use wrk for benchmarking.
-Don't break existing unit tests.
-
-/aris
-My ETL script currently hangs on 17 edge cases. Fix them one by one.
-cargo test all green means done.
-```
-
-The agent automatically infers the target metric, verification command, scope, and completion criteria from your description.
-
-### Don't Know What Metric to Use?
-
-```
-/aris:plan
-Goal: Make the API faster
-```
-
-The plan wizard analyzes your codebase, suggests metrics, and dry-runs the verify command before launching.
-
----
-
-## CLI
-
-ARIS works without any binary — the skill protocol handles everything through normal shell and git commands. The CLI adds the parts that make longer runs easier to trust: installation, validation, structured logs, best-result lookup, reports, export, parallel exploration, and a live dashboard.
-
-```bash
-cargo install aris-cli
-```
-
-### What the CLI Adds
-
-| Without CLI (bash fallback) | With CLI |
-|-----------------------------|----------|
-| TSV file for experiment log | JSONL with structured schema |
-| Manual metric tracking | Reward-hacking detection |
-| `tail` / `sort` for history | `aris log`, `aris best`, `aris diff` |
-| No validation | `aris doctor` (14+ pre-flight checks) |
-| No visualization | `aris watch` (live TUI dashboard) |
-
-### Key Commands
-
-| Command | Purpose |
-|---------|---------|
-| `aris init` | Initialize project config |
-| `aris doctor` | Pre-flight validation |
-| `aris record --metric X --status Y` | Record experiment |
-| `aris log` | View history |
-| `aris best` | Best result + diff |
-| `aris watch` | Live TUI dashboard |
-| `aris fork` / `aris merge-best` | Parallel exploration |
-| `aris report` | Generate summary |
-| `aris export --format csv` | Export for analysis |
-
-All commands support `--json` and `AUTORESEARCH_FORMAT=json` env var.
-
----
-
 ## Adapting to Different Domains
 
 | Domain | Metric | Verify Command | Guard |
@@ -267,11 +194,50 @@ All commands support `--json` and `AUTORESEARCH_FORMAT=json` env var.
 
 ---
 
+## CLI (Optional)
+
+The skill protocol handles the core loop through normal shell and git commands — **no installation needed**. The CLI adds capabilities that matter most during long runs:
+
+```bash
+cargo install aris-cli
+```
+
+### Skill vs Skill + CLI
+
+| Skill Only (zero install) | Skill + CLI |
+|---------------------------|-------------|
+| ✅ Works immediately | ✅ One-command install to any agent |
+| ✅ Full 8-phase loop | ✅ Full loop + structured logging |
+| TSV file for experiment log | JSONL with structured schema |
+| Manual metric tracking | Reward-hacking detection |
+| `tail` / `sort` for history | `aris log`, `aris best`, `aris diff` |
+| No pre-checks | `aris doctor` (14+ pre-flight checks) |
+| No visualization | `aris watch` (live TUI dashboard) |
+
+### Key Commands
+
+| Command | Purpose |
+|---------|---------|
+| `aris init` | Initialize project config |
+| `aris install <agent>` | One-command skill install for target agent |
+| `aris doctor` | Pre-flight validation |
+| `aris record --metric X --status Y` | Record experiment |
+| `aris log` | View history |
+| `aris best` | Best result + diff |
+| `aris watch` | Live TUI dashboard |
+| `aris fork` / `aris merge-best` | Parallel exploration |
+| `aris report` | Generate summary |
+| `aris export --format csv` | Export for analysis |
+
+All commands support `--json` and `AUTORESEARCH_FORMAT=json` env var.
+
+---
+
 ## Project Structure
 
 ```
 aris-cli/
-├── skills/aris/                    ← Skill protocol (the core)
+├── skills/aris/                    ← Skill protocol (the core — just copy this)
 │   ├── SKILL.md                    ← Main skill index + router
 │   └── references/                 ← Phase protocols
 │       ├── autonomous-loop-protocol.md
