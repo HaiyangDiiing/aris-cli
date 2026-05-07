@@ -1,0 +1,6 @@
+/target
+.autoresearch/
+*.swp
+*.swo
+.DS_Store
+Thumbs.db

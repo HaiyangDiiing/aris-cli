@@ -1,0 +1,25 @@
+---
+name: aris:plan
+description: >
+  Use when user types /aris:plan or asks to turn a goal into Scope/Metric/Direction/Verify.
+  Interactive wizard that builds the full ARIS config from a single Goal.
+argument-hint: "[goal description]"
+---
+
+EXECUTE IMMEDIATELY — do not deliberate, do not ask clarifying questions before reading the protocol.
+
+## Argument Parsing (do this FIRST)
+
+Extract the goal from $ARGUMENTS. The user may provide extensive context — treat the
+entire text as goal context. Look for `Goal:` keyword; if absent, the full $ARGUMENTS
+text IS the goal.
+
+## Execution
+
+1. Read the plan workflow: `skills/aris/references/plan-workflow.md`
+2. If no goal provided — use `AskUserQuestion` to capture it per plan-workflow.md Phase 1
+3. Execute the 7-step planning wizard:
+   - Capture Goal -> Analyze Context -> Define Scope -> Define Metric -> Define Direction -> Define Verify -> Confirm & Launch
+4. Output a ready-to-paste `/aris` invocation with all fields validated
+
+Stream all output live — never run in background.
